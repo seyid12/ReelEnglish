@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -22,9 +23,15 @@ func main() {
 	app.Get("/feed", handlers.GetFeedHandler)
 	app.Post("/sync-progress", handlers.SyncProgressHandler)
 
-	// Sunucuyu 3000 portunda başlat
-	log.Println("Sunucu 3000 portunda başlatılıyor...")
-	if err := app.Listen(":3000"); err != nil {
+	// PORT ortam değişkenini oku (Render.com bunu otomatik sağlar)
+	// Lokal geliştirme için varsayılan olarak 3000 kullan
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	log.Printf("Sunucu :%s portunda başlatılıyor...", port)
+	if err := app.Listen(":" + port); err != nil {
 		log.Fatalf("Sunucu başlatılırken hata oluştu: %v", err)
 	}
 }

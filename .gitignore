@@ -2,6 +2,10 @@
 serviceAccountKey.json
 *.json.key
 
+# Environment Variables
+.env
+.env.*
+
 # Go
 *.exe
 *.exe~

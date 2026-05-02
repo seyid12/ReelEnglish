@@ -128,10 +128,13 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
                       },
                     ),
                     builder: (context, player) {
-                      return Transform.scale(
-                        scale:
-                            1.5, // Siyah kenarlıkları ve YouTube UI'ını ekran dışına it
-                        child: player,
+                      return Center(
+                        child: AspectRatio(
+                          aspectRatio: 9 / 16,
+                          child: ClipRect(
+                            child: player,
+                          ),
+                        ),
                       );
                     },
                   )

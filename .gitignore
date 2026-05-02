@@ -1,0 +1,41 @@
+# Firebase / Gizli Kimlik Bilgileri
+serviceAccountKey.json
+*.json.key
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+vendor/
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+*.iml
+
+# Android
+ReelEnglish_mobil/fluxlingo_app/android/.gradle/
+ReelEnglish_mobil/fluxlingo_app/android/local.properties
+ReelEnglish_mobil/fluxlingo_app/android/app/debug/
+ReelEnglish_mobil/fluxlingo_app/android/key.properties
+
+# iOS
+ReelEnglish_mobil/fluxlingo_app/ios/Pods/
+ReelEnglish_mobil/fluxlingo_app/ios/.symlinks/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

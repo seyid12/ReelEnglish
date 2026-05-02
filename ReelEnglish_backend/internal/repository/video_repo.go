@@ -51,3 +51,31 @@ func GetFeedVideos(ctx context.Context) ([]models.Video, error) {
 
 	return videos, nil
 }
+
+// AddVideo adds a new video to the "videos" collection in Firestore
+func AddVideo(ctx context.Context, video *models.Video) error {
+	if config.FirebaseApp == nil {
+		return fmt.Errorf("firebase app başlatılmamış")
+	}
+
+	client, err := config.FirebaseApp.Firestore(ctx)
+	if err != nil {
+		return fmt.Errorf("firestore client alınamadı: %v", err)
+	}
+	defer client.Close()
+
+	// Yeni doküman ekle
+	docRef, _, err := client.Collection("videos").Add(ctx, map[string]interface{}{
+		"url":          video.URL,
+		"difficulty":   video.Difficulty,
+		"grammar_tags": video.GrammarTags,
+		"source_type":  video.SourceType,
+	})
+	if err != nil {
+		return fmt.Errorf("video eklenirken hata oluştu: %v", err)
+	}
+
+	// Video ID'sini ata
+	video.ID = docRef.ID
+	return nil
+}

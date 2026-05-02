@@ -22,6 +22,7 @@ func main() {
 	// Route'ları ayarla
 	app.Get("/feed", handlers.GetFeedHandler)
 	app.Post("/sync-progress", handlers.SyncProgressHandler)
+	app.Post("/api/videos", handlers.AddVideoHandler)
 
 	// PORT ortam değişkenini oku (Render.com bunu otomatik sağlar)
 	// Lokal geliştirme için varsayılan olarak 3000 kullan

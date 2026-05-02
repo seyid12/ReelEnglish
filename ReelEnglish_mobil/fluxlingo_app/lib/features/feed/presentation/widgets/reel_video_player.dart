@@ -10,11 +10,11 @@ class ReelVideoPlayer extends StatefulWidget {
   final bool isDistracted;
 
   const ReelVideoPlayer({
-    Key? key,
+    super.key,
     required this.video,
     required this.isActive,
     required this.isDistracted,
-  }) : super(key: key);
+  });
 
   @override
   State<ReelVideoPlayer> createState() => _ReelVideoPlayerState();
@@ -129,18 +129,19 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
                     ),
                     builder: (context, player) {
                       return Transform.scale(
-                        scale: 1.5, // Siyah kenarlıkları ve YouTube UI'ını ekran dışına it
+                        scale:
+                            1.5, // Siyah kenarlıkları ve YouTube UI'ını ekran dışına it
                         child: player,
                       );
                     },
                   )
                 : _mediaController != null
-                    ? Video(
-                        controller: _mediaController!,
-                        fit: BoxFit.cover,
-                        controls: NoVideoControls,
-                      )
-                    : const SizedBox(),
+                ? Video(
+                    controller: _mediaController!,
+                    fit: BoxFit.cover,
+                    controls: NoVideoControls,
+                  )
+                : const SizedBox(),
           ),
         ),
 
@@ -174,7 +175,11 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
             ),
             child: Row(
               children: const [
-                Icon(Icons.local_fire_department, color: Colors.orange, size: 18),
+                Icon(
+                  Icons.local_fire_department,
+                  color: Colors.orange,
+                  size: 18,
+                ),
                 SizedBox(width: 4),
                 Text(
                   '12 Gün',
@@ -202,15 +207,9 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
                 iconColor: Colors.redAccent,
               ),
               SizedBox(height: 24),
-              _AnimatedIconButton(
-                icon: Icons.chat_bubble,
-                label: '340',
-              ),
+              _AnimatedIconButton(icon: Icons.chat_bubble, label: '340'),
               SizedBox(height: 24),
-              _AnimatedIconButton(
-                icon: Icons.bookmark,
-                label: '1.2K',
-              ),
+              _AnimatedIconButton(icon: Icons.bookmark, label: '1.2K'),
             ],
           ),
         ),
@@ -231,7 +230,11 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   shadows: [
-                    Shadow(color: Colors.black54, blurRadius: 4, offset: Offset(1, 1)),
+                    Shadow(
+                      color: Colors.black54,
+                      blurRadius: 4,
+                      offset: Offset(1, 1),
+                    ),
                   ],
                 ),
               ),
@@ -259,11 +262,11 @@ class _AnimatedIconButton extends StatefulWidget {
   final Color iconColor;
 
   const _AnimatedIconButton({
-    Key? key,
+    super.key,
     required this.icon,
     required this.label,
     this.iconColor = Colors.white,
-  }) : super(key: key);
+  });
 
   @override
   State<_AnimatedIconButton> createState() => _AnimatedIconButtonState();
@@ -293,7 +296,11 @@ class _AnimatedIconButtonState extends State<_AnimatedIconButton> {
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 shadows: [
-                  Shadow(color: Colors.black54, blurRadius: 2, offset: Offset(1, 1)),
+                  Shadow(
+                    color: Colors.black54,
+                    blurRadius: 2,
+                    offset: Offset(1, 1),
+                  ),
                 ],
               ),
             ),

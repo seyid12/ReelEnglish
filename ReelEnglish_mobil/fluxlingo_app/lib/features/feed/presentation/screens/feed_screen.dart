@@ -12,6 +12,7 @@ import '../widgets/reel_video_player.dart';
 import '../../../perception/services/face_detector_service.dart';
 import '../../../intervention/services/speech_service.dart';
 import '../../../gamification/providers/user_stats_provider.dart';
+import '../../../admin/presentation/screens/add_video_screen.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key});
@@ -249,6 +250,17 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddVideoScreen()),
+          ).then((_) {
+            _loadVideosFromBackend();
+          });
+        },
+        child: const Icon(Icons.add),
+      ),
       body: Stack(
         children: [
           PageView.builder(

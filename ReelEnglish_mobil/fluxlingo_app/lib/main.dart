@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'features/feed/presentation/screens/feed_screen.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Firebase başlangıç ayarları
+  await Firebase.initializeApp();
 
   // media_kit başlangıç ayarları
   MediaKit.ensureInitialized();

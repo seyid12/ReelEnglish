@@ -8,6 +8,7 @@ import (
 
 	"reelenglish/internal/config"
 	"reelenglish/internal/handlers"
+	"reelenglish/internal/middleware"
 )
 
 func main() {
@@ -20,9 +21,14 @@ func main() {
 	app := fiber.New()
 
 	// Route'ları ayarla
+	// GET /feed - Herkese açık (Middleware yok)
 	app.Get("/feed", handlers.GetFeedHandler)
+	
+	// POST /sync-progress - Herkese açık (Middleware yok)
 	app.Post("/sync-progress", handlers.SyncProgressHandler)
-	app.Post("/api/videos", handlers.AddVideoHandler)
+	
+	// POST /api/videos - Sadece kimlik doğrulanmış (Admin) kullanıcılar (Middleware var)
+	app.Post("/api/videos", middleware.FirebaseAuth(), handlers.AddVideoHandler)
 
 	// PORT ortam değişkenini oku (Render.com bunu otomatik sağlar)
 	// Lokal geliştirme için varsayılan olarak 3000 kullan

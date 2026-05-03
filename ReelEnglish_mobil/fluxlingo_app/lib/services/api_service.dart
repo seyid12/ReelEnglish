@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/video_model.dart';
 
 class ApiService {
@@ -51,9 +52,24 @@ class ApiService {
   }
   static Future<bool> addVideo(VideoModel video) async {
     try {
+      // Firebase'den ID Token al
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        print('❌ Kullanıcı giriş yapmamış');
+        return false;
+      }
+
+      final idToken = await user.getIdToken();
+
+      // Headers'a Authorization token ekle
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      };
+
       final response = await http.post(
         Uri.parse('$baseUrl/api/videos'),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
         body: json.encode({
           'url': video.videoUrl,
           'difficulty': video.difficultyLevel is int ? video.difficultyLevel : int.tryParse(video.difficultyLevel.toString().replaceAll(RegExp(r'[^0-9]'), '')) ?? 1,
@@ -61,9 +77,16 @@ class ApiService {
           'source_type': 'youtube',
         }),
       );
-      return response.statusCode == 200 || response.statusCode == 201;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('✅ Video başarıyla eklendi');
+        return true;
+      } else {
+        print('❌ Video ekleme hatası: ${response.statusCode} - ${response.body}');
+        return false;
+      }
     } catch (e) {
-      print('Video ekleme hatası: $e');
+      print('❌ Video ekleme hatası: $e');
       return false;
     }
   }

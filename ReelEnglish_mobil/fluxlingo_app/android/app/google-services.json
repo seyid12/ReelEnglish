@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "519721198398",
+    "project_id": "reelenglish-e7a95",
+    "storage_bucket": "reelenglish-e7a95.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:519721198398:android:4989a1fbfe6fe667f0826f",
+        "android_client_info": {
+          "package_name": "com.example.fluxlingo_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsc-QJNPZEsM91VQk8xhbQ-Hgu6sDvSlI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

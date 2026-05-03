@@ -5,14 +5,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:confetti/confetti.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../models/video_model.dart';
 import '../../../../services/api_service.dart';
+import '../../../../services/auth_service.dart';
 import '../widgets/reel_video_player.dart';
 import '../../../perception/services/face_detector_service.dart';
 import '../../../intervention/services/speech_service.dart';
 import '../../../gamification/providers/user_stats_provider.dart';
 import '../../../admin/presentation/screens/add_video_screen.dart';
+import '../../../auth/presentation/screens/login_screen.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key});
@@ -46,6 +49,12 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
   late ConfettiController _confettiController;
   bool _showXPAnimation = false;
 
+  // Authentication
+  final AuthService _authService = AuthService();
+
+  // PageView Controller
+  late PageController _pageController;
+
   final List<VideoModel> _fallbackMockVideos = [
     VideoModel(
       id: 'mock1',
@@ -70,6 +79,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
       duration: const Duration(seconds: 2),
     );
     _faceDetectorService = FaceDetectorService();
+    _pageController = PageController(viewportFraction: 1.0);
 
     _loadVideosFromBackend();
     _initPerception();
@@ -129,6 +139,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     _distractionSub?.cancel();
     _faceDetectorService.dispose();
     _confettiController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -248,26 +259,35 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
       );
     }
 
+    // Kullanıcı giriş yaptı mı kontrol et
+    final isUserAuthenticated = _authService.currentUser != null;
+
     return Scaffold(
       backgroundColor: Colors.black,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddVideoScreen()),
-          ).then((_) {
-            _loadVideosFromBackend();
-          });
-        },
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: isUserAuthenticated
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddVideoScreen()),
+                ).then((_) {
+                  _loadVideosFromBackend();
+                });
+              },
+              backgroundColor: Colors.amber,
+              child: const Icon(Icons.add, color: Colors.black),
+            )
+          : null,
       body: Stack(
         children: [
           PageView.builder(
+            controller: _pageController,
             scrollDirection: Axis.vertical,
             physics: _isDistracted
                 ? const NeverScrollableScrollPhysics()
-                : const AlwaysScrollableScrollPhysics(),
+                : const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
             onPageChanged: (index) {
               HapticFeedback.lightImpact();
 
@@ -298,7 +318,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
           if (!_isDistracted)
             Positioned(
               top: 55,
-              right: 16,
+              right: 60,
               child: IconButton(
                 icon: const Icon(
                   Icons.remove_red_eye,
@@ -315,6 +335,13 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                   });
                 },
               ),
+            ),
+
+          if (!_isDistracted)
+            Positioned(
+              top: 55,
+              right: 16,
+              child: _buildAuthButton(),
             ),
 
           if (_isDistracted)
@@ -600,5 +627,86 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildAuthButton() {
+    final isUserAuthenticated = _authService.currentUser != null;
+
+    if (isUserAuthenticated) {
+      return IconButton(
+        icon: const Icon(
+          Icons.logout,
+          color: Colors.red,
+          size: 28,
+        ),
+        tooltip: 'Çıkış Yap',
+        onPressed: () async {
+          final shouldLogout = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: const Color(0xFF1E1E1E),
+              title: const Text(
+                'Çıkış Yap',
+                style: TextStyle(color: Colors.white),
+              ),
+              content: const Text(
+                'Uygulamadan çıkış yapmak istediğinize emin misiniz?',
+                style: TextStyle(color: Colors.white70),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('İptal', style: TextStyle(color: Colors.amber)),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: const Text('Çıkış Yap', style: TextStyle(color: Colors.red)),
+                ),
+              ],
+            ),
+          );
+
+          if (shouldLogout == true) {
+            try {
+              await _authService.signOut();
+              if (mounted) {
+                setState(() {});
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Başarıyla çıkış yapıldı.'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            } catch (e) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Çıkış yapılırken hata oluştu: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            }
+          }
+        },
+      );
+    } else {
+      return IconButton(
+        icon: const Icon(
+          Icons.lock_outline,
+          color: Colors.amber,
+          size: 28,
+        ),
+        tooltip: 'Admin Giriş',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        },
+      );
+    }
   }
 }

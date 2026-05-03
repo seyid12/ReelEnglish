@@ -17,8 +17,10 @@ func main() {
 		log.Fatalf("Firebase başlatılamadı: %v", err)
 	}
 
-	// Yeni bir Fiber uygulaması oluştur
-	app := fiber.New()
+	// Yeni bir Fiber uygulaması oluştur (Video yüklemeleri için limit 100 MB yapıldı)
+	app := fiber.New(fiber.Config{
+		BodyLimit: 100 * 1024 * 1024, // 100 MB limit
+	})
 
 	// Route'ları ayarla
 	// GET /feed - Herkese açık (Middleware yok)

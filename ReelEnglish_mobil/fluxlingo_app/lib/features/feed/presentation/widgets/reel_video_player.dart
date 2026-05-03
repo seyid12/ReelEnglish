@@ -283,11 +283,7 @@ class _AnimatedIconButton extends StatefulWidget {
   final String label;
   final Color iconColor;
 
-  const _AnimatedIconButton({
-    required this.icon,
-    required this.label,
-    this.iconColor = Colors.white,
-  });
+  const _AnimatedIconButton({required this.icon, required this.label, required this.iconColor});
 
   @override
   State<_AnimatedIconButton> createState() => _AnimatedIconButtonState();

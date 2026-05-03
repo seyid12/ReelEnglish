@@ -5,7 +5,10 @@ import '../models/video_model.dart';
 
 class ApiService {
   // Render.com'da yayınlanan canlı (production) backend
-  static const String baseUrl = 'https://reelenglish-4.onrender.com';
+   static const String baseUrl = 'https://reelenglish-4.onrender.com';
+
+  // Lokal test için (Localtunnel aracılığıyla Güvenlik Duvarını aşarak):
+  //static const String baseUrl = 'https://icy-singers-sniff.loca.lt';
 
   static Future<List<VideoModel>> fetchVideos() async {
     try {
@@ -66,6 +69,7 @@ class ApiService {
       final headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $idToken',
+        'Bypass-Tunnel-Reminder': 'true',
       };
 
       final response = await http.post(
@@ -86,7 +90,7 @@ class ApiService {
               .split(',')
               .map((e) => e.trim())
               .toList(),
-          'source_type': 'youtube',
+          'source_type': video.sourceType,
         }),
       );
 
@@ -114,8 +118,13 @@ class ApiService {
       }
       final idToken = await user.getIdToken();
 
-      var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/api/videos/upload'));
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl/api/videos/upload'),
+      );
       request.headers['Authorization'] = 'Bearer $idToken';
+      request.headers['Bypass-Tunnel-Reminder'] =
+          'true'; // Localtunnel uyarı sayfasını atlamak için
       request.files.add(await http.MultipartFile.fromPath('video', filePath));
 
       var streamedResponse = await request.send();

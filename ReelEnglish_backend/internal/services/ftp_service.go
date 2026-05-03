@@ -24,7 +24,7 @@ func UploadToFTP(fileHeader *multipart.FileHeader) (string, error) {
 	ftpPort := "21"
 	ftpUser := "depo"
 	ftpPass := "Acid1234!."
-	baseUrl := "https://anadolusagliksen.com" // Eğer dosyalar alt klasöre gidiyorsa (örn: depo), sonuna /depo eklemeniz gerekebilir.
+	baseUrl := "https://depom.anadolusagliksen.com"
 
 	if ftpHost == "" {
 		return "", fmt.Errorf("FTP Host ayarlanmamış. Lütfen ftp_service.go dosyasını güncelleyin")

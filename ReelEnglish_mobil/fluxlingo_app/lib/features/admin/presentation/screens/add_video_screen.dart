@@ -55,11 +55,11 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
     });
 
     String videoUrlToSave = _urlController.text.trim();
-    String sourceType = 'youtube';
+    String sourceType = 'youtube'; // Default YouTube için
 
     // Eğer yerel dosya seçildiyse:
     if (_selectedFile != null) {
-      sourceType = 'drive';
+      sourceType = 'ftp';
       setState(() {
         _statusMessage = 'AI: Ses ayrıştırılıyor ve transkript hazırlanıyor...';
       });

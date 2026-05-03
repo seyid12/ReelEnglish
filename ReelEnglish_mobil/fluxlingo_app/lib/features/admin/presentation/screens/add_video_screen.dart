@@ -3,7 +3,7 @@ import '../../../../models/video_model.dart';
 import '../../../../services/api_service.dart';
 
 class AddVideoScreen extends StatefulWidget {
-  const AddVideoScreen({Key? key}) : super(key: key);
+  const AddVideoScreen({super.key});
 
   @override
   State<AddVideoScreen> createState() => _AddVideoScreenState();
@@ -26,7 +26,9 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
 
   Future<void> _saveVideo() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() { _isLoading = true; });
+    setState(() {
+      _isLoading = true;
+    });
     final newVideo = VideoModel(
       id: '',
       videoUrl: _urlController.text.trim(),
@@ -35,16 +37,18 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
       sourceType: 'youtube',
     );
     final success = await ApiService.addVideo(newVideo);
-    setState(() { _isLoading = false; });
+    setState(() {
+      _isLoading = false;
+    });
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Video başarıyla eklendi!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Video başarıyla eklendi!')));
       _resetForm();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Bir hata oluştu.')), 
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Bir hata oluştu.')));
     }
   }
 
@@ -61,8 +65,11 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
             children: [
               TextFormField(
                 controller: _urlController,
-                decoration: const InputDecoration(labelText: 'YouTube Shorts URL'),
-                validator: (value) => value == null || value.isEmpty ? 'URL gerekli' : null,
+                decoration: const InputDecoration(
+                  labelText: 'YouTube Shorts URL',
+                ),
+                validator: (value) =>
+                    value == null || value.isEmpty ? 'URL gerekli' : null,
               ),
               const SizedBox(height: 16),
               Row(
@@ -76,7 +83,9 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
                       divisions: 9,
                       label: _difficulty.round().toString(),
                       onChanged: (value) {
-                        setState(() { _difficulty = value; });
+                        setState(() {
+                          _difficulty = value;
+                        });
                       },
                     ),
                   ),
@@ -86,7 +95,9 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _tagsController,
-                decoration: const InputDecoration(labelText: 'Gramer Etiketleri (virgülle)'),
+                decoration: const InputDecoration(
+                  labelText: 'Gramer Etiketleri (virgülle)',
+                ),
               ),
               const SizedBox(height: 24),
               SizedBox(

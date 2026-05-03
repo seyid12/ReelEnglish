@@ -131,9 +131,7 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
                       return Center(
                         child: AspectRatio(
                           aspectRatio: 9 / 16,
-                          child: ClipRect(
-                            child: player,
-                          ),
+                          child: ClipRect(child: player),
                         ),
                       );
                     },
@@ -265,7 +263,6 @@ class _AnimatedIconButton extends StatefulWidget {
   final Color iconColor;
 
   const _AnimatedIconButton({
-    super.key,
     required this.icon,
     required this.label,
     this.iconColor = Colors.white,

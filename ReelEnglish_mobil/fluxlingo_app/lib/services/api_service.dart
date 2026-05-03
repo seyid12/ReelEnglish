@@ -5,7 +5,7 @@ import '../models/video_model.dart';
 
 class ApiService {
   // Render.com'da yayınlanan canlı (production) backend
-  static const String baseUrl = 'https://reelenglish-4.onrender.com';
+  static const String baseUrl = 'http://192.168.1.102:3000';
 
   static Future<List<VideoModel>> fetchVideos() async {
     try {
@@ -50,6 +50,7 @@ class ApiService {
       throw Exception('Senkronizasyon hatası: $e');
     }
   }
+
   static Future<bool> addVideo(VideoModel video) async {
     try {
       // Firebase'den ID Token al
@@ -72,8 +73,19 @@ class ApiService {
         headers: headers,
         body: json.encode({
           'url': video.videoUrl,
-          'difficulty': video.difficultyLevel is int ? video.difficultyLevel : int.tryParse(video.difficultyLevel.toString().replaceAll(RegExp(r'[^0-9]'), '')) ?? 1,
-          'grammar_tags': video.grammarTopic.split(',').map((e) => e.trim()).toList(),
+          'difficulty': video.difficultyLevel is int
+              ? video.difficultyLevel
+              : int.tryParse(
+                      video.difficultyLevel.toString().replaceAll(
+                        RegExp(r'[^0-9]'),
+                        '',
+                      ),
+                    ) ??
+                    1,
+          'grammar_tags': video.grammarTopic
+              .split(',')
+              .map((e) => e.trim())
+              .toList(),
           'source_type': 'youtube',
         }),
       );
@@ -82,7 +94,9 @@ class ApiService {
         print('✅ Video başarıyla eklendi');
         return true;
       } else {
-        print('❌ Video ekleme hatası: ${response.statusCode} - ${response.body}');
+        print(
+          '❌ Video ekleme hatası: ${response.statusCode} - ${response.body}',
+        );
         return false;
       }
     } catch (e) {

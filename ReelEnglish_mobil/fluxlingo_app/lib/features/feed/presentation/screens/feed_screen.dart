@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:confetti/confetti.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../models/video_model.dart';
 import '../../../../services/api_service.dart';
@@ -269,7 +268,9 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const AddVideoScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const AddVideoScreen(),
+                  ),
                 ).then((_) {
                   _loadVideosFromBackend();
                 });
@@ -338,11 +339,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
             ),
 
           if (!_isDistracted)
-            Positioned(
-              top: 55,
-              right: 16,
-              child: _buildAuthButton(),
-            ),
+            Positioned(top: 55, right: 16, child: _buildAuthButton()),
 
           if (_isDistracted)
             Positioned.fill(
@@ -634,11 +631,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
 
     if (isUserAuthenticated) {
       return IconButton(
-        icon: const Icon(
-          Icons.logout,
-          color: Colors.red,
-          size: 28,
-        ),
+        icon: const Icon(Icons.logout, color: Colors.red, size: 28),
         tooltip: 'Çıkış Yap',
         onPressed: () async {
           final shouldLogout = await showDialog<bool>(
@@ -656,11 +649,17 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: const Text('İptal', style: TextStyle(color: Colors.amber)),
+                  child: const Text(
+                    'İptal',
+                    style: TextStyle(color: Colors.amber),
+                  ),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, true),
-                  child: const Text('Çıkış Yap', style: TextStyle(color: Colors.red)),
+                  child: const Text(
+                    'Çıkış Yap',
+                    style: TextStyle(color: Colors.red),
+                  ),
                 ),
               ],
             ),
@@ -694,11 +693,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
       );
     } else {
       return IconButton(
-        icon: const Icon(
-          Icons.lock_outline,
-          color: Colors.amber,
-          size: 28,
-        ),
+        icon: const Icon(Icons.lock_outline, color: Colors.amber, size: 28),
         tooltip: 'Admin Giriş',
         onPressed: () {
           Navigator.push(

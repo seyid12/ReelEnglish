@@ -105,7 +105,7 @@ class ApiService {
     }
   }
 
-  static Future<String?> uploadVideoToDrive(String filePath) async {
+  static Future<String?> uploadVideoToFTP(String filePath) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
@@ -125,11 +125,11 @@ class ApiService {
         final Map<String, dynamic> data = json.decode(response.body);
         return data['url'] as String?;
       } else {
-        print('❌ Drive upload hatası: ${response.statusCode} - ${response.body}');
+        print('❌ FTP upload hatası: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      print('❌ Drive upload hatası: $e');
+      print('❌ FTP upload hatası: $e');
       return null;
     }
   }

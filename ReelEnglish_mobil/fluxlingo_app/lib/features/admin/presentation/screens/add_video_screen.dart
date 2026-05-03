@@ -79,24 +79,24 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
       }
 
       setState(() {
-        _statusMessage = "Video Google Drive'a yükleniyor...";
+        _statusMessage = "Video sunucuya (FTP) yükleniyor...";
       });
 
-      // 2. Videoyu Go Backend üzerinden Drive'a yükle
-      final driveUrl = await ApiService.uploadVideoToDrive(_selectedFile!.path);
-      if (driveUrl == null) {
+      // 2. Videoyu Go Backend üzerinden FTP'ye yükle
+      final ftpUrl = await ApiService.uploadVideoToFTP(_selectedFile!.path);
+      if (ftpUrl == null) {
          setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Drive yüklemesi başarısız oldu.')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sunucuya yükleme başarısız oldu.')));
         return;
       }
       
-      videoUrlToSave = driveUrl;
+      videoUrlToSave = ftpUrl;
 
       // TODO: Eğer Backend Firestore'da quiz'i de kaydedecekse, AddVideo api'sini güncelleyip
       // aiResult verisini (Kelimeler ve Quiz) backend'e payload olarak yollamamız gerekir.
-      // Şimdilik sadece Videoyu (drive url ile) ekliyoruz.
+      // Şimdilik sadece Videoyu (ftp url ile) ekliyoruz.
     }
 
     setState(() {
@@ -155,7 +155,7 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       const SizedBox(height: 8),
-                      const Text("Cihazdan seçilen videolar otomatik olarak Drive'a yüklenir ve AI ile kelime/quiz analizinden geçer."),
+                      const Text("Cihazdan seçilen videolar otomatik olarak sunucuya (FTP) yüklenir ve AI ile kelime/quiz analizinden geçer."),
                       const SizedBox(height: 12),
                       ElevatedButton.icon(
                         icon: const Icon(Icons.video_file),

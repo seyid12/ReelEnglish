@@ -5,7 +5,7 @@
 import FlutterMacOS
 import Foundation
 
-import ffmpeg_kit_flutter_min_gpl
+import ffmpeg_kit_flutter_new
 import file_picker
 import firebase_auth
 import firebase_core

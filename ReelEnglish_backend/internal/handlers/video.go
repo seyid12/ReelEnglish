@@ -57,8 +57,8 @@ func AddVideoHandler(c *fiber.Ctx) error {
 	})
 }
 
-// UploadVideoToDriveHandler POST /api/videos/upload - Video dosyasını Drive'a yükler
-func UploadVideoToDriveHandler(c *fiber.Ctx) error {
+// UploadVideoToFTPHandler POST /api/videos/upload - Video dosyasını FTP'ye yükler
+func UploadVideoToFTPHandler(c *fiber.Ctx) error {
 	// Multipart form'dan 'video' anahtarını al
 	fileHeader, err := c.FormFile("video")
 	if err != nil {
@@ -67,17 +67,17 @@ func UploadVideoToDriveHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	// Servisi çağırıp Drive'a yükle
-	publicUrl, err := services.UploadToDrive(fileHeader)
+	// Servisi çağırıp FTP'ye yükle
+	publicUrl, err := services.UploadToFTP(fileHeader)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Drive yükleme hatası",
+			"error": "FTP yükleme hatası",
 			"details": err.Error(),
 		})
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "Video Drive'a başarıyla yüklendi",
+		"message": "Video FTP'ye başarıyla yüklendi",
 		"url":     publicUrl,
 	})
 }

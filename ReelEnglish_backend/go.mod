@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go/firestore v1.21.0
 	firebase.google.com/go/v4 v4.13.0
 	github.com/gofiber/fiber/v2 v2.52.0
+	github.com/jlaffaye/ftp v0.2.0
 	google.golang.org/api v0.277.0
 )
 
@@ -38,6 +39,8 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.15 // indirect
 	github.com/googleapis/gax-go/v2 v2.22.0 // indirect
+	github.com/hashicorp/errwrap v1.0.0 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

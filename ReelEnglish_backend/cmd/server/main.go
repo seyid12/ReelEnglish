@@ -39,6 +39,9 @@ func main() {
 	// POST /api/videos - Sadece kimlik doğrulanmış (Admin) kullanıcılar (Middleware var)
 	app.Post("/api/videos", middleware.FirebaseAuth(), handlers.AddVideoHandler)
 
+	// POST /api/videos/upload - FTP'ye video yükle (Admin)
+	app.Post("/api/videos/upload", middleware.FirebaseAuth(), handlers.UploadVideoToFTPHandler)
+
 	// PORT ortam değişkenini oku (Render.com bunu otomatik sağlar)
 	// Lokal geliştirme için varsayılan olarak 3000 kullan
 	port := os.Getenv("PORT")

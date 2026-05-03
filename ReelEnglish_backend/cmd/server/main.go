@@ -27,6 +27,15 @@ func main() {
 	// POST /sync-progress - Herkese açık (Middleware yok)
 	app.Post("/sync-progress", handlers.SyncProgressHandler)
 	
+	// GET /api/quizzes - Herkese açık, quiz soruları getir
+	app.Get("/api/quizzes", handlers.GetQuizzesHandler)
+	
+	// POST /api/quiz-submit - Herkese açık, quiz cevabını doğrula
+	app.Post("/api/quiz-submit", handlers.SubmitQuizHandler)
+	
+	// GET /api/quiz-stats - Kullanıcı istatistikleri
+	app.Get("/api/quiz-stats", handlers.GetQuizStatsHandler)
+	
 	// POST /api/videos - Sadece kimlik doğrulanmış (Admin) kullanıcılar (Middleware var)
 	app.Post("/api/videos", middleware.FirebaseAuth(), handlers.AddVideoHandler)
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +16,7 @@ import '../../../intervention/services/speech_service.dart';
 import '../../../gamification/providers/user_stats_provider.dart';
 import '../../../admin/presentation/screens/add_video_screen.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
+import '../../../quiz/presentation/screens/quiz_screen.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key});
@@ -284,6 +286,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
           PageView.builder(
             controller: _pageController,
             scrollDirection: Axis.vertical,
+            dragStartBehavior: DragStartBehavior.down,
             physics: _isDistracted
                 ? const NeverScrollableScrollPhysics()
                 : const BouncingScrollPhysics(
@@ -379,6 +382,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
   Widget _buildTopBar() {
     final stats = ref.watch(userStatsProvider);
     final progress = (stats.currentXP % 500) / 500.0;
+    final currentVideo = _videos.isNotEmpty ? _videos[_currentIndex % _videos.length] : null;
 
     return Positioned(
       top: 65,

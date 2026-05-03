@@ -3,6 +3,7 @@ package handlers
 import (
 	"reelenglish/internal/models"
 	"reelenglish/internal/repository"
+	"reelenglish/internal/services"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -55,3 +56,29 @@ func AddVideoHandler(c *fiber.Ctx) error {
 		"video":   video,
 	})
 }
+
+// UploadVideoToDriveHandler POST /api/videos/upload - Video dosyasını Drive'a yükler
+func UploadVideoToDriveHandler(c *fiber.Ctx) error {
+	// Multipart form'dan 'video' anahtarını al
+	fileHeader, err := c.FormFile("video")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Video dosyası bulunamadı",
+		})
+	}
+
+	// Servisi çağırıp Drive'a yükle
+	publicUrl, err := services.UploadToDrive(fileHeader)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Drive yükleme hatası",
+			"details": err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Video Drive'a başarıyla yüklendi",
+		"url":     publicUrl,
+	})
+}
+

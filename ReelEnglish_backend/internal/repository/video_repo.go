@@ -23,7 +23,7 @@ func GetFeedVideos(ctx context.Context) ([]models.Video, error) {
 	defer client.Close()
 
 	// "videos" koleksiyonundan ilk 5 videoyu çek
-	iter := client.Collection("videos").Limit(15).Documents(ctx)
+	iter := client.Collection("videos").Documents(ctx)
 	var videos []models.Video
 
 	for {

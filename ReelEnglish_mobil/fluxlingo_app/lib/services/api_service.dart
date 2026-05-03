@@ -5,7 +5,7 @@ import '../models/video_model.dart';
 
 class ApiService {
   // Render.com'da yayınlanan canlı (production) backend
-  static const String baseUrl = 'http://192.168.1.102:3000';
+  static const String baseUrl = 'https://reelenglish-4.onrender.com';
 
   static Future<List<VideoModel>> fetchVideos() async {
     try {
@@ -102,6 +102,35 @@ class ApiService {
     } catch (e) {
       print('❌ Video ekleme hatası: $e');
       return false;
+    }
+  }
+
+  static Future<String?> uploadVideoToDrive(String filePath) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        print('❌ Kullanıcı giriş yapmamış');
+        return null;
+      }
+      final idToken = await user.getIdToken();
+
+      var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/api/videos/upload'));
+      request.headers['Authorization'] = 'Bearer $idToken';
+      request.files.add(await http.MultipartFile.fromPath('video', filePath));
+
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        return data['url'] as String?;
+      } else {
+        print('❌ Drive upload hatası: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('❌ Drive upload hatası: $e');
+      return null;
     }
   }
 }

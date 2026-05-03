@@ -3,6 +3,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../../../../models/video_model.dart';
+import '../../../quiz/presentation/screens/quiz_screen.dart';
 
 class ReelVideoPlayer extends StatefulWidget {
   final VideoModel video;
@@ -199,19 +200,39 @@ class _ReelVideoPlayerState extends State<ReelVideoPlayer> {
         Positioned(
           right: 16,
           bottom: 40,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              _AnimatedIconButton(
-                icon: Icons.favorite,
-                label: '12K',
-                iconColor: Colors.redAccent,
-              ),
-              SizedBox(height: 24),
-              _AnimatedIconButton(icon: Icons.chat_bubble, label: '340'),
-              SizedBox(height: 24),
-              _AnimatedIconButton(icon: Icons.bookmark, label: '1.2K'),
-            ],
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => QuizScreen(
+                    videoId: widget.video.id,
+                    videoTitle: widget.video.grammarTopic,
+                  ),
+                ),
+              );
+            },
+            child: Column(
+              children: const [
+                Icon(Icons.quiz, color: Colors.purple, size: 38),
+                SizedBox(height: 6),
+                Text(
+                  'Quiz',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black54,
+                        blurRadius: 4,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
 

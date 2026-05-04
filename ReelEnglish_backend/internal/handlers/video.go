@@ -11,10 +11,16 @@ import (
 // AddVideoHandler POST /api/videos - Yeni video ekler
 func AddVideoHandler(c *fiber.Ctx) error {
 	var req struct {
-		URL        string   `json:"url"`
-		Difficulty int      `json:"difficulty"`
-		GrammarTags []string `json:"grammar_tags"`
-		SourceType string   `json:"source_type"`
+		URL         string        `json:"url"`
+		Difficulty  int           `json:"difficulty"`
+		GrammarTags []string      `json:"grammar_tags"`
+		SourceType  string        `json:"source_type"`
+		Words       []models.Word `json:"words"`
+		Quiz        []struct {
+			Question string   `json:"question"`
+			Options  []string `json:"options"`
+			Answer   string   `json:"answer"`
+		} `json:"quiz"`
 	}
 
 	if err := c.BodyParser(&req); err != nil {
@@ -41,14 +47,39 @@ func AddVideoHandler(c *fiber.Ctx) error {
 		Difficulty:  req.Difficulty,
 		GrammarTags: req.GrammarTags,
 		SourceType:  req.SourceType,
+		Words:       req.Words,
 	}
 
 	// Veritabanına ekle
 	if err := repository.AddVideo(c.Context(), video); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Video eklenirken hata oluştu",
+			"error":   "Video eklenirken hata oluştu",
 			"details": err.Error(),
 		})
+	}
+
+	// Quizzes ekle
+	if len(req.Quiz) > 0 {
+		for _, q := range req.Quiz {
+			// Doğru cevabın index'ini bul
+			correctIndex := 0
+			for i, opt := range q.Options {
+				if opt == q.Answer {
+					correctIndex = i
+					break
+				}
+			}
+
+			quizModel := &models.Quiz{
+				VideoID:            video.ID,
+				Question:           q.Question,
+				Options:            q.Options,
+				CorrectAnswerIndex: correctIndex,
+			}
+
+			// Hata olsa bile devam et, en azından bir kısmı eklenebilir
+			_ = repository.AddQuiz(c.Context(), quizModel)
+		}
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{

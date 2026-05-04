@@ -55,7 +55,8 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
     });
 
     String videoUrlToSave = _urlController.text.trim();
-    String sourceType = 'youtube'; // Default YouTube için
+    String sourceType = 'youtube';
+    Map<String, dynamic>? parsedAiResult;
 
     // Eğer yerel dosya seçildiyse:
     if (_selectedFile != null) {
@@ -66,6 +67,8 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
 
       // 1. AI ile kelime ve quiz çıkar
       final aiResult = await _aiService.processVideoAi(_selectedFile!);
+      parsedAiResult = aiResult;
+      
       if (aiResult == null) {
         setState(() {
           _isLoading = false;
@@ -93,10 +96,6 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
       }
       
       videoUrlToSave = ftpUrl;
-
-      // TODO: Eğer Backend Firestore'da quiz'i de kaydedecekse, AddVideo api'sini güncelleyip
-      // aiResult verisini (Kelimeler ve Quiz) backend'e payload olarak yollamamız gerekir.
-      // Şimdilik sadece Videoyu (ftp url ile) ekliyoruz.
     }
 
     setState(() {
@@ -111,7 +110,11 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
       sourceType: sourceType,
     );
     
-    final success = await ApiService.addVideo(newVideo);
+    final success = await ApiService.addVideo(
+      newVideo,
+      words: parsedAiResult?['words'] as List<dynamic>?,
+      quiz: parsedAiResult?['quiz'] as List<dynamic>?,
+    );
     
     setState(() {
       _isLoading = false;

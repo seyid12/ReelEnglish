@@ -47,6 +47,8 @@
 	<string>Telaffuzunuzu analiz etmek için konuşma tanıma izni gereklidir.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Sizi dinleyebilmemiz için mikrofona ihtiyacımız var.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Cihazınızdan video seçip yükleyebilmeniz için galerinize erişim izni gereklidir.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

@@ -70,6 +70,7 @@ func AddVideo(ctx context.Context, video *models.Video) error {
 		"difficulty":   video.Difficulty,
 		"grammar_tags": video.GrammarTags,
 		"source_type":  video.SourceType,
+		"words":        video.Words, // AI kelimelerini kaydet
 	})
 	if err != nil {
 		return fmt.Errorf("video eklenirken hata oluştu: %v", err)
@@ -77,5 +78,32 @@ func AddVideo(ctx context.Context, video *models.Video) error {
 
 	// Video ID'sini ata
 	video.ID = docRef.ID
+	return nil
+}
+
+// AddQuiz adds a new quiz question to the "quizzes" collection in Firestore
+func AddQuiz(ctx context.Context, quiz *models.Quiz) error {
+	if config.FirebaseApp == nil {
+		return fmt.Errorf("firebase app başlatılmamış")
+	}
+
+	client, err := config.FirebaseApp.Firestore(ctx)
+	if err != nil {
+		return fmt.Errorf("firestore client alınamadı: %v", err)
+	}
+	defer client.Close()
+
+	// Yeni quiz dokümanı ekle
+	docRef, _, err := client.Collection("quizzes").Add(ctx, map[string]interface{}{
+		"video_id":             quiz.VideoID,
+		"question":             quiz.Question,
+		"options":              quiz.Options,
+		"correct_answer_index": quiz.CorrectAnswerIndex,
+	})
+	if err != nil {
+		return fmt.Errorf("quiz eklenirken hata oluştu: %v", err)
+	}
+
+	quiz.ID = docRef.ID
 	return nil
 }

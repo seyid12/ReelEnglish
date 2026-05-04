@@ -54,9 +54,12 @@ class ApiService {
     }
   }
 
-  static Future<bool> addVideo(VideoModel video) async {
+  static Future<bool> addVideo(
+    VideoModel video, {
+    List<dynamic>? words,
+    List<dynamic>? quiz,
+  }) async {
     try {
-      // Firebase'den ID Token al
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         print('❌ Kullanıcı giriş yapmamış');
@@ -65,33 +68,30 @@ class ApiService {
 
       final idToken = await user.getIdToken();
 
-      // Headers'a Authorization token ekle
       final headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $idToken',
         'Bypass-Tunnel-Reminder': 'true',
       };
 
+      final Map<String, dynamic> body = {
+        'url': video.videoUrl,
+        'difficulty': int.tryParse(video.difficultyLevel.toString().replaceAll(RegExp(r'[^0-9]'), '')) ?? 1,
+        'grammar_tags': video.grammarTopic.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList(),
+        'source_type': video.sourceType,
+      };
+
+      if (words != null && words.isNotEmpty) {
+        body['words'] = words;
+      }
+      if (quiz != null && quiz.isNotEmpty) {
+        body['quiz'] = quiz;
+      }
+
       final response = await http.post(
         Uri.parse('$baseUrl/api/videos'),
         headers: headers,
-        body: json.encode({
-          'url': video.videoUrl,
-          'difficulty': video.difficultyLevel is int
-              ? video.difficultyLevel
-              : int.tryParse(
-                      video.difficultyLevel.toString().replaceAll(
-                        RegExp(r'[^0-9]'),
-                        '',
-                      ),
-                    ) ??
-                    1,
-          'grammar_tags': video.grammarTopic
-              .split(',')
-              .map((e) => e.trim())
-              .toList(),
-          'source_type': video.sourceType,
-        }),
+        body: json.encode(body),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {

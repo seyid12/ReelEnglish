@@ -4,13 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"cloud.google.com/go/firestore"
 	"reelenglish/internal/config"
 	"reelenglish/internal/models"
 )
 
-// UpdateUserProgress updates or creates user progress in Firestore
-func UpdateUserProgress(ctx context.Context, req models.SyncRequest) error {
+// CreateUser Firestore'a yeni kullanıcı belgesi ekler (role: "user")
+func CreateUser(ctx context.Context, uid string, email string) error {
 	if config.FirebaseApp == nil {
 		return fmt.Errorf("firebase app başlatılmamış")
 	}
@@ -21,36 +20,57 @@ func UpdateUserProgress(ctx context.Context, req models.SyncRequest) error {
 	}
 	defer client.Close()
 
-	docRef := client.Collection("users").Doc(req.UserID)
-
-	// Firestore'a güncellenecek veya yazılacak verileri hazırla
-	updates := map[string]interface{}{
-		"focus_score":      req.FocusScore,
-		"session_duration": req.SessionDuration,
-	}
-
-	// Dizileri ArrayUnion ile mevcut diziye ekle (eğer dizi varsa öğe eklenir, yoksa yeni dizi oluşur)
-	if len(req.LearnedWords) > 0 {
-		updates["learned_words"] = firestore.ArrayUnion(toInterfaceSlice(req.LearnedWords)...)
-	}
-	if len(req.StruggledGrammar) > 0 {
-		updates["struggled_grammar"] = firestore.ArrayUnion(toInterfaceSlice(req.StruggledGrammar)...)
-	}
-
-	// Set komutu ve firestore.MergeAll kullanarak, doküman yoksa oluşturulmasını, varsa üzerine yazılmadan sadece ilgili alanların güncellenmesini sağlıyoruz.
-	_, err = docRef.Set(ctx, updates, firestore.MergeAll)
+	_, err = client.Collection("users").Doc(uid).Set(ctx, map[string]interface{}{
+		"uid":   uid,
+		"email": email,
+		"role":  "user",
+	})
 	if err != nil {
-		return fmt.Errorf("kullanıcı verisi güncellenemedi: %v", err)
+		return fmt.Errorf("kullanıcı oluşturulurken hata: %v", err)
 	}
-
 	return nil
 }
 
-// toInterfaceSlice string dizisini firestore.ArrayUnion için interface dizisine çevirir
-func toInterfaceSlice(strSlice []string) []interface{} {
-	interfaceSlice := make([]interface{}, len(strSlice))
-	for i, v := range strSlice {
-		interfaceSlice[i] = v
+// GetUser Firestore'dan kullanıcı belgesini getirir
+func GetUser(ctx context.Context, uid string) (*models.User, error) {
+	if config.FirebaseApp == nil {
+		return nil, fmt.Errorf("firebase app başlatılmamış")
 	}
-	return interfaceSlice
+
+	client, err := config.FirebaseApp.Firestore(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("firestore client alınamadı: %v", err)
+	}
+	defer client.Close()
+
+	doc, err := client.Collection("users").Doc(uid).Get(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("kullanıcı bulunamadı: %v", err)
+	}
+
+	var user models.User
+	if err := doc.DataTo(&user); err != nil {
+		return nil, fmt.Errorf("kullanıcı verisi okunamadı: %v", err)
+	}
+	user.UID = doc.Ref.ID
+	return &user, nil
+}
+
+// DeleteUser Firestore'dan kullanıcı belgesini siler
+func DeleteUser(ctx context.Context, uid string) error {
+	if config.FirebaseApp == nil {
+		return fmt.Errorf("firebase app başlatılmamış")
+	}
+
+	client, err := config.FirebaseApp.Firestore(ctx)
+	if err != nil {
+		return fmt.Errorf("firestore client alınamadı: %v", err)
+	}
+	defer client.Close()
+
+	_, err = client.Collection("users").Doc(uid).Delete(ctx)
+	if err != nil {
+		return fmt.Errorf("kullanıcı silinirken hata: %v", err)
+	}
+	return nil
 }

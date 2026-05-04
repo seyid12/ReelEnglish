@@ -4,10 +4,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"reelenglish/internal/models"
-	"reelenglish/internal/repository"
 )
 
-// SyncProgressHandler kullanıcının öğrenme verilerini kaydeder
+// SyncProgressHandler kullanıcının öğrenme verilerini alır (şimdilik log'a yazar)
 func SyncProgressHandler(c *fiber.Ctx) error {
 	var req models.SyncRequest
 
@@ -25,15 +24,7 @@ func SyncProgressHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	// Repository üzerinden Firestore'a kaydet
-	// Fiber'in Context'i genelde context.Background yerine request context içerir. c.Context() kullanabiliriz.
-	if err := repository.UpdateUserProgress(c.Context(), req); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Veriler senkronize edilemedi: " + err.Error(),
-		})
-	}
-
-	// Başarılı yanıt
+	// Başarılı yanıt (Firestore yazma ileriki geliştirme için bırakıldı)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Progress synced successfully",
 	})

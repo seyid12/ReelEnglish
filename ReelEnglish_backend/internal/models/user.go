@@ -1,9 +1,8 @@
 package models
 
-// User uygulama içindeki kullanıcı modelini temsil eder
+// User Firestore'daki kullanıcı belgesini temsil eder
 type User struct {
-	ID        string `json:"id"`
-	Email     string `json:"email"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	UID   string `json:"uid" firestore:"uid,omitempty"`
+	Email string `json:"email" firestore:"email"`
+	Role  string `json:"role" firestore:"role"` // "admin" veya "user"
 }

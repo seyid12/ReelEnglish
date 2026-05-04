@@ -51,6 +51,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
 
   // Authentication
   final AuthService _authService = AuthService();
+  bool _isAdmin = false;
 
   // PageView Controller
   late PageController _pageController;
@@ -84,6 +85,15 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     _loadVideosFromBackend();
     _initPerception();
     _speechService.initialize();
+    _checkAdminRole();
+  }
+
+  Future<void> _checkAdminRole() async {
+    if (_authService.currentUser == null) return;
+    final role = await _authService.getUserRole(ApiService.baseUrl);
+    if (mounted) {
+      setState(() => _isAdmin = role == 'admin');
+    }
   }
 
   Future<void> _loadVideosFromBackend() async {
@@ -259,12 +269,9 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
       );
     }
 
-    // Kullanıcı giriş yaptı mı kontrol et
-    final isUserAuthenticated = _authService.currentUser != null;
-
     return Scaffold(
       backgroundColor: Colors.black,
-      floatingActionButton: isUserAuthenticated
+      floatingActionButton: _isAdmin
           ? FloatingActionButton(
               onPressed: () {
                 Navigator.push(
@@ -698,13 +705,17 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
       );
     } else {
       return IconButton(
-        icon: const Icon(Icons.lock_outline, color: Colors.amber, size: 28),
-        tooltip: 'Admin Giriş',
+        icon: const Icon(Icons.person_outline, color: Colors.amber, size: 28),
+        tooltip: 'Giriş Yap / Kayıt Ol',
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const LoginScreen()),
-          );
+          ).then((_) {
+            // Giriş sonrası admin rolünü kontrol et
+            _checkAdminRole();
+            setState(() {});
+          });
         },
       );
     }

@@ -44,6 +44,15 @@ func main() {
 	// POST /api/videos/upload - FTP'ye video yükle (Admin)
 	app.Post("/api/videos/upload", middleware.FirebaseAuth(), handlers.UploadVideoToFTPHandler)
 
+	// POST /api/users/register - Yeni kullanıcı Firestore'a kaydol (Auth sonrası)
+	app.Post("/api/users/register", middleware.FirebaseAuth(), handlers.RegisterUserHandler)
+
+	// GET /api/users/me - Kullanıcı bilgisi ve rolünü getir
+	app.Get("/api/users/me", middleware.FirebaseAuth(), handlers.GetMeHandler)
+
+	// DELETE /api/users/me - Kullanıcı belgesini sil (Firestore)
+	app.Delete("/api/users/me", middleware.FirebaseAuth(), handlers.DeleteUserHandler)
+
 	// PORT ortam değişkenini oku (Render.com bunu otomatik sağlar)
 	// Lokal geliştirme için varsayılan olarak 3000 kullan
 	port := os.Getenv("PORT")

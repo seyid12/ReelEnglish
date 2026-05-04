@@ -89,7 +89,7 @@ class AiPipelineService {
 
     try {
       final model = GenerativeModel(
-        model: 'gemini-1.5-flash',
+        model: 'gemini-3.0-flash',
         apiKey: _geminiApiKey,
       );
 
